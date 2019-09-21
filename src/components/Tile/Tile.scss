@@ -1,5 +1,10 @@
 .tile {
   border: 1px solid black;
+  border-radius: 1rem;
+  padding: 1rem;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
 
   &.small {
     grid-column: span 2;
