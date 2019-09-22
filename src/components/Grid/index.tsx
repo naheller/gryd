@@ -73,7 +73,7 @@ const Grid: React.FC<GridProps> = () => {
   }
 
   const renderSearchTile = (): JSX.Element => (
-    <Tile size="filler">
+    <Tile size="small">
       <SearchBar fetchRedditPosts={fetchRedditPosts} />
     </Tile>
   )
@@ -83,9 +83,9 @@ const Grid: React.FC<GridProps> = () => {
       {redditPosts.map(
         (postProps: RedditPostProps, i: number): JSX.Element => renderTile(postProps, i)
       )}
-      {/* {[...Array(redditPosts.length)].map((_, i: number) => (
+      {[...Array(redditPosts.length)].map((_, i: number) => (
         <Tile size="filler" key={`tile-filler-${i}`} />
-      ))} */}
+      ))}
     </Fragment>
   )
 
