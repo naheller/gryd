@@ -1,5 +1,47 @@
 .reddit-post {
+  height: 100%;
+  display: flex;
+  flex-flow: column nowrap;
+
+  .header {
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    padding: 1rem;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-color: #f7fafa;
+    border-top-left-radius: 0.9rem;
+    border-top-right-radius: 0.9rem;
+    -webkit-box-shadow: inset 0 -6rem 6rem 0.25rem #131e22;
+    -moz-box-shadow: inset 0 -6rem 6rem 0.25rem #131e22;
+    box-shadow: inset 0 -6rem 6rem 0.25rem #131e22;
+  }
+
+  .body {
+    flex: 1;
+    padding: 1rem;
+    border-bottom-left-radius: 0.9rem;
+    border-bottom-right-radius: 0.9rem;
+    background: linear-gradient(to right bottom, #fff, #f7fafa);
+
+    &.round-all-corners {
+      border-radius: 0.9rem;
+    }
+  }
+
   .title {
-    margin: 0 0 1rem 0;
+    margin: 0;
+    height: max-content;
+
+    &.lightgreen {
+      color: #f7fafa;
+      text-decoration-color: #f7fafa !important;
+    }
+
+    &.green {
+      color: #5d92a2;
+      text-decoration-color: #5d92a2;
+    }
   }
 }

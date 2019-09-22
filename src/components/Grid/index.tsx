@@ -1,7 +1,9 @@
 import React, { useState, useEffect, Fragment } from 'react'
 import get from 'lodash/get'
+import isEmpty from 'lodash/isEmpty'
 
 import Tile from '../Tile'
+import SearchBar from '../SearchBar'
 import RedditPost, { RedditPostProps } from '../RedditPost'
 
 import './Grid.scss'
@@ -9,18 +11,23 @@ import './Grid.scss'
 type GridProps = {}
 
 const Grid: React.FC<GridProps> = () => {
-  const [redditPosts, setRedditPosts] = useState([])
-  const [fetchState, setFetchState] = useState('NOT_STARTED')
+  const [redditPosts, setRedditPosts]: any = useState([])
+  const [fetchState, setFetchState]: any = useState('NOT_STARTED')
+  const baseUrl: string = 'https://www.reddit.com'
 
-  const fetchRedditPosts = () => {
+  const fetchRedditPosts = (subreddit: string = ''): void => {
     setFetchState('LOADING')
 
-    fetch('https://www.reddit.com/.json')
+    const formattedString = `r/${subreddit.trim().replace(/\s+/g, '')}`
+    const searchTerm = isEmpty(subreddit) ? 'hot' : formattedString
+    const url = `${baseUrl}/${searchTerm}/.json?limit=50`
+
+    fetch(url)
       .then(res => res.json())
       .then(listing => {
         console.log(listing)
         const posts = get(listing, 'data.children', [])
-        const redditPosts = posts.map((post: any) => makeRedditPost(post))
+        const redditPosts = posts.map((post: object) => makeRedditPost(post))
 
         setRedditPosts(redditPosts)
         setFetchState('SUCCESS')
@@ -45,27 +52,52 @@ const Grid: React.FC<GridProps> = () => {
     }
   }
 
-  const renderTiles = () => (
+  const getTileSize = (hasThumbnail: boolean, hasHighScore: boolean): string => {
+    if (hasThumbnail && hasHighScore) return 'large'
+    if (hasThumbnail || hasHighScore) return 'medium'
+    return 'small'
+  }
+
+  const renderTile = (postProps: RedditPostProps, index: number): JSX.Element => {
+    const { thumbnail, score }: any = postProps
+    const hasThumbnail: boolean =
+      thumbnail !== 'self' && thumbnail !== 'default' && thumbnail !== ''
+
+    const hasHighScore = score > 30000
+
+    return (
+      <Tile key={`tile-${index}`} size={getTileSize(hasThumbnail, hasHighScore)}>
+        <RedditPost {...postProps} />
+      </Tile>
+    )
+  }
+
+  const renderSearchTile = (): JSX.Element => (
+    <Tile size="filler">
+      <SearchBar fetchRedditPosts={fetchRedditPosts} />
+    </Tile>
+  )
+
+  const renderTiles = (): JSX.Element => (
     <Fragment>
-      {redditPosts.map((postProps: RedditPostProps, i: number) => (
-        <Tile
-          key={`tile-${i}`}
-          thumbnail={get(postProps, 'thumbnail')}
-          size={i % 2 === 0 ? 'small' : i % 3 === 0 ? 'medium' : 'large'}
-        >
-          <RedditPost {...postProps} />
-        </Tile>
-      ))}
-      {[...Array(10)].map((_, i: number) => (
+      {redditPosts.map(
+        (postProps: RedditPostProps, i: number): JSX.Element => renderTile(postProps, i)
+      )}
+      {/* {[...Array(redditPosts.length)].map((_, i: number) => (
         <Tile size="filler" key={`tile-filler-${i}`} />
-      ))}
+      ))} */}
     </Fragment>
   )
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => fetchRedditPosts(), [])
 
-  return <div className="grid">{fetchState === 'SUCCESS' ? renderTiles() : <h3>Loading</h3>}</div>
+  return (
+    <div className="grid">
+      {renderSearchTile()}
+      {fetchState === 'SUCCESS' ? renderTiles() : <h3>Loading</h3>}
+    </div>
+  )
 }
 
 export default Grid

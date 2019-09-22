@@ -15,46 +15,88 @@ export type RedditPostProps = {
   numComments: number
 }
 
+type BGImageStyle = {
+  backgroundImage: string
+}
+
 const RedditPost: FC<RedditPostProps> = ({
   title,
   createdUnix,
   url,
   numComments,
   permalink,
-  subreddit
-}) => {
-  const getLink = () => (
-    <Fragment>
-      <a href={url} target="_blank" rel="noopener noreferrer">
-        Link
-      </a>
-      <span>{' - '}</span>
-    </Fragment>
+  subreddit,
+  thumbnail,
+  score
+}): JSX.Element => {
+  const bgImageStyle: BGImageStyle = { backgroundImage: `url(${thumbnail})` }
+  const hasThumbnail: boolean = thumbnail !== 'self' && thumbnail !== 'default' && thumbnail !== ''
+  const hasHighScore = score > 30000
+  const baseUrl: string = 'https://www.reddit.com'
+
+  const formatUnixDate = (unix: number): string => moment.unix(unix).format('ddd M/D - h:mm a')
+
+  const renderHeader = (): JSX.Element => (
+    <div className="header" style={hasThumbnail ? bgImageStyle : {}}>
+      {renderTitle()}
+    </div>
   )
 
-  const getSubredditLink = () => (
-    <Fragment>
-      <a href={`http://www.reddit.com/r/${subreddit}`} target="_blank" rel="noopener noreferrer">
-        {`r/${subreddit}`}
-      </a>
-      <span>{' - '}</span>
-    </Fragment>
-  )
+  const renderBody = (): JSX.Element => {
+    const roundAllCorners = !hasThumbnail ? 'round-all-corners' : ''
 
-  const getTitle = () => {
-    // adjust string trunc length based on tile size?
-    return `${title.substring(0, 100)}${title.length > 100 ? '...' : ''}`
+    // TODO: Use momentjs to further format date
+    return (
+      <div className={`body ${roundAllCorners}`}>
+        {!hasThumbnail && renderTitle()}
+        {!hasThumbnail && <hr />}
+        {renderSubredditLink()}
+        <a href={`${baseUrl}${permalink}`} target="_blank" rel="noopener noreferrer">
+          {`${numComments.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} comments`}
+        </a>
+        <div>{`${score.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} pts - ${formatUnixDate(
+          createdUnix
+        )}`}</div>
+      </div>
+    )
   }
+
+  const renderLink = (): JSX.Element => {
+    const fontColor = hasThumbnail ? 'lightgreen' : 'green'
+
+    return (
+      <a
+        className={`title ${fontColor}`}
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+      >{`${title.substring(0, 100)}${title.length > 100 ? '...' : ''}`}</a>
+    )
+  }
+
+  const renderTitle = (): JSX.Element => {
+    return hasHighScore ? (
+      <h2 className="title">{renderLink()}</h2>
+    ) : (
+      <h4 className="title">{renderLink()}</h4>
+    )
+  }
+
+  const renderSubredditLink = (): JSX.Element => (
+    <Fragment>
+      <b>
+        <a href={`${baseUrl}/r/${subreddit}`} target="_blank" rel="noopener noreferrer">
+          {`r/${subreddit}`}
+        </a>
+      </b>
+      <span>{' - '}</span>
+    </Fragment>
+  )
 
   return (
     <div className="reddit-post">
-      <h4 className="title">{getTitle()}</h4>
-      {url !== `https://www.reddit.com${permalink}` && getLink()}
-      {getSubredditLink()}
-      <a href={`https://www.reddit.com${permalink}`} target="_blank" rel="noopener noreferrer">
-        {`${numComments} comments`}
-      </a>
-      <div>{moment.unix(createdUnix).format('ddd M/D - h:mm a')}</div>
+      {hasThumbnail && renderHeader()}
+      {renderBody()}
     </div>
   )
 }
