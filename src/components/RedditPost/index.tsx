@@ -70,7 +70,7 @@ const RedditPost: FC<RedditPostProps> = ({
         href={url}
         target="_blank"
         rel="noopener noreferrer"
-      >{`${title.substring(0, 100)}${title.length > 100 ? '...' : ''}`}</a>
+      >{`${title.substring(0, 120)}${title.length > 120 ? '...' : ''}`}</a>
     )
   }
 
