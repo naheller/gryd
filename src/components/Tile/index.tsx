@@ -2,11 +2,12 @@ import React from 'react'
 import './Tile.scss'
 
 type TileProps = {
-  children: any
-  size: string
+  key?: string
+  size?: string
+  children?: any
 }
 
-const Tile: React.FC<TileProps> = ({ size, children }) => {
+const Tile: React.FC<TileProps> = ({ size, children }): JSX.Element => {
   return <div className={`tile ${size}`}>{children}</div>
 }
 
