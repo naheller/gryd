@@ -13,6 +13,7 @@ export type RedditPostProps = {
   subreddit: string
   thumbnail: string
   numComments: number
+  isNsfw: boolean
 }
 
 type BGImageStyle = {

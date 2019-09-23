@@ -20,7 +20,7 @@ const Grid: React.FC<GridProps> = () => {
 
     const formattedString = `r/${subreddit.trim().replace(/\s+/g, '')}`
     const searchTerm = isEmpty(subreddit) ? 'hot' : formattedString
-    const url = `${baseUrl}/${searchTerm}/.json?limit=50`
+    const url = `${baseUrl}/${searchTerm}/.json?limit=100`
 
     fetch(url)
       .then(res => res.json())
@@ -28,8 +28,9 @@ const Grid: React.FC<GridProps> = () => {
         console.log(listing)
         const posts = get(listing, 'data.children', [])
         const redditPosts = posts.map((post: object) => makeRedditPost(post))
+        const sfwRedditPosts = redditPosts.filter((post: { isNsfw: boolean }) => !post.isNsfw)
 
-        setRedditPosts(redditPosts)
+        setRedditPosts(sfwRedditPosts)
         setFetchState('SUCCESS')
       })
       .catch(err => {
@@ -39,17 +40,18 @@ const Grid: React.FC<GridProps> = () => {
   }
 
   const makeRedditPost = (post: object): RedditPostProps => {
-    return {
-      title: get(post, 'data.title', ''),
-      score: get(post, 'data.score', 0),
-      url: get(post, 'data.url', ''),
-      createdUnix: get(post, 'data.created', 0),
-      permalink: get(post, 'data.permalink', ''),
-      selfText: get(post, 'data.selfText', ''),
-      subreddit: get(post, 'data.subreddit', ''),
-      thumbnail: get(post, 'data.thumbnail', ''),
-      numComments: get(post, 'data.num_comments', 0)
-    }
+      return {
+        title: get(post, 'data.title', ''),
+        score: get(post, 'data.score', 0),
+        url: get(post, 'data.url', ''),
+        createdUnix: get(post, 'data.created', 0),
+        permalink: get(post, 'data.permalink', ''),
+        selfText: get(post, 'data.selfText', ''),
+        subreddit: get(post, 'data.subreddit', ''),
+        thumbnail: get(post, 'data.thumbnail', ''),
+        numComments: get(post, 'data.num_comments', 0),
+        isNsfw: get(post, 'data.over_18', true)
+      }
   }
 
   const getTileSize = (hasThumbnail: boolean, hasHighScore: boolean): string => {
