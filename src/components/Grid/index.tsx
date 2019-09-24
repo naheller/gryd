@@ -3,7 +3,7 @@ import get from 'lodash/get'
 import isEmpty from 'lodash/isEmpty'
 
 import Tile from '../Tile'
-import SearchBar from '../SearchBar'
+import Search from '../Search'
 import RedditPost, { RedditPostProps } from '../RedditPost'
 
 import './Grid.scss'
@@ -12,7 +12,7 @@ type GridProps = {}
 
 const Grid: React.FC<GridProps> = () => {
   const [redditPosts, setRedditPosts]: any = useState([])
-  const [fetchState, setFetchState]: any = useState('NOT_STARTED')
+  const [fetchStatus, setFetchStatus]: any = useState('NOT_STARTED')
   const baseUrl: string = 'https://www.reddit.com'
 
   useEffect(() => {
@@ -20,7 +20,7 @@ const Grid: React.FC<GridProps> = () => {
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchRedditPosts = (subreddit: string = ''): void => {
-    setFetchState('LOADING')
+    setFetchStatus('LOADING')
 
     const formattedString: string = `r/${subreddit.trim().replace(/\s+/g, '')}`
     const searchTerm: string = isEmpty(subreddit) ? 'hot' : formattedString
@@ -35,10 +35,10 @@ const Grid: React.FC<GridProps> = () => {
         const sfwRedditPosts = redditPosts.filter((post: { isNsfw: boolean }) => !post.isNsfw)
 
         setRedditPosts(sfwRedditPosts)
-        setFetchState('SUCCESS')
+        setFetchStatus('SUCCESS')
       })
       .catch(err => {
-        setFetchState('FAILURE')
+        setFetchStatus('FAILURE')
         console.log(err)
       })
   }
@@ -81,7 +81,7 @@ const Grid: React.FC<GridProps> = () => {
 
   const renderSearchTile = (): JSX.Element => (
     <Tile size="small">
-      <SearchBar fetchRedditPosts={fetchRedditPosts} />
+      <Search fetchRedditPosts={fetchRedditPosts} />
     </Tile>
   )
 
@@ -99,7 +99,7 @@ const Grid: React.FC<GridProps> = () => {
   return (
     <div className="grid">
       {renderSearchTile()}
-      {fetchState === 'SUCCESS' ? renderTiles() : <h3>Loading...</h3>}
+      {fetchStatus === 'SUCCESS' ? renderTiles() : <h3>Loading...</h3>}
     </div>
   )
 }
