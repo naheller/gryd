@@ -48,14 +48,14 @@ const RedditPost: FC<RedditPostProps> = ({
 
   const [comments, setComments] = useState([])
   const [topComment, setTopComment] = useState({ body: '', author: '' })
-  const [fetchState, setFetchState] = useState('NOT_STARTED')
+  const [fetchStatus, setFetchStatus] = useState('NOT_STARTED')
 
   useEffect(() => {
     if (hasHighScore) fetchCommentsForPost(subreddit, id)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    if (fetchState === 'SUCCESS') {
+    if (fetchStatus === 'SUCCESS') {
       const firstCommentAuthor: string = get(comments, '[0].author', '')
       const firstCommentBody: string = get(comments, '[0].body', '')
 
@@ -67,7 +67,7 @@ const RedditPost: FC<RedditPostProps> = ({
 
       setTopComment({ body: commentToDisplay.body, author: commentToDisplay.author })
     }
-  }, [fetchState]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [fetchStatus]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const formatUnixDate = (unix: number): string => moment.unix(unix).format('ddd M/D - h:mm a')
 
@@ -75,7 +75,7 @@ const RedditPost: FC<RedditPostProps> = ({
     number.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
 
   const fetchCommentsForPost = (subreddit: string = '', postId: string = ''): void => {
-    setFetchState('LOADING')
+    setFetchStatus('LOADING')
 
     const subredditPrefixed = `r/${subreddit.trim().replace(/\s+/g, '')}`
     const url = `${baseUrl}/${subredditPrefixed}/comments/${postId}.json?limit=25`
@@ -86,10 +86,10 @@ const RedditPost: FC<RedditPostProps> = ({
         const comments = get(listing, '[1].data.children', [])
         const redditComments = comments.map((comment: object) => makeComment(comment))
         setComments(redditComments)
-        setFetchState('SUCCESS')
+        setFetchStatus('SUCCESS')
       })
       .catch(err => {
-        setFetchState('FAILURE')
+        setFetchStatus('FAILURE')
         console.log(err)
       })
   }
@@ -97,7 +97,7 @@ const RedditPost: FC<RedditPostProps> = ({
   const makeComment = (post: object): CommentProps => {
     return {
       id: get(post, 'data.id', ''),
-      body: DOMPurify.sanitize(get(post, 'data.body', '')),
+      body: get(post, 'data.body', ''),
       author: get(post, 'data.author', '')
     }
   }
@@ -108,7 +108,7 @@ const RedditPost: FC<RedditPostProps> = ({
       <small className="author">
         <i>{`${topComment.author} commented:`}</i>
       </small>
-      <div className="comment-body" dangerouslySetInnerHTML={{ __html: marked(topComment.body) }} />
+      <div className="comment-body" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(marked(topComment.body)) }} />
     </div>
   )
 
@@ -160,7 +160,7 @@ const RedditPost: FC<RedditPostProps> = ({
           {`${addCommasToNumber(numComments)} comments`}
         </a>
         <div>{`${addCommasToNumber(score)} pts - ${formatUnixDate(createdUnix)}`}</div>
-        {fetchState === 'SUCCESS' && renderComment()}
+        {fetchStatus === 'SUCCESS' && renderComment()}
       </div>
     )
   }
