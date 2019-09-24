@@ -25,23 +25,37 @@
     border-bottom-right-radius: 0.9rem;
     background: linear-gradient(to right bottom, #fff, #f7fafa);
 
+    .comment {
+      font-style: italic;
+
+      .comment-body {
+        overflow: auto;
+        max-height: 10rem;
+      }
+    }
+
     &.round-all-corners {
       border-radius: 0.9rem;
     }
   }
 
-  .title {
-    margin: 0;
-    height: max-content;
+  .title-container {
+    max-height: 9rem;
+    overflow: auto;
 
-    &.lightgreen {
-      color: #f7fafa;
-      text-decoration-color: #f7fafa !important;
-    }
+    .title {
+      margin: 0;
+      height: max-content;
 
-    &.green {
-      color: #5d92a2;
-      text-decoration-color: #5d92a2;
+      &.lightgreen {
+        color: #f7fafa;
+        text-decoration-color: #f7fafa !important;
+      }
+
+      &.green {
+        color: #5d92a2;
+        text-decoration-color: #5d92a2;
+      }
     }
   }
 }

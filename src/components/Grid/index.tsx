@@ -15,12 +15,16 @@ const Grid: React.FC<GridProps> = () => {
   const [fetchState, setFetchState]: any = useState('NOT_STARTED')
   const baseUrl: string = 'https://www.reddit.com'
 
+  useEffect(() => {
+    fetchRedditPosts()
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
   const fetchRedditPosts = (subreddit: string = ''): void => {
     setFetchState('LOADING')
 
-    const formattedString = `r/${subreddit.trim().replace(/\s+/g, '')}`
-    const searchTerm = isEmpty(subreddit) ? 'hot' : formattedString
-    const url = `${baseUrl}/${searchTerm}/.json?limit=100`
+    const formattedString: string = `r/${subreddit.trim().replace(/\s+/g, '')}`
+    const searchTerm: string = isEmpty(subreddit) ? 'hot' : formattedString
+    const url: string = `${baseUrl}/${searchTerm}/.json?limit=100`
 
     fetch(url)
       .then(res => res.json())
@@ -40,18 +44,19 @@ const Grid: React.FC<GridProps> = () => {
   }
 
   const makeRedditPost = (post: object): RedditPostProps => {
-      return {
-        title: get(post, 'data.title', ''),
-        score: get(post, 'data.score', 0),
-        url: get(post, 'data.url', ''),
-        createdUnix: get(post, 'data.created', 0),
-        permalink: get(post, 'data.permalink', ''),
-        selfText: get(post, 'data.selfText', ''),
-        subreddit: get(post, 'data.subreddit', ''),
-        thumbnail: get(post, 'data.thumbnail', ''),
-        numComments: get(post, 'data.num_comments', 0),
-        isNsfw: get(post, 'data.over_18', true)
-      }
+    return {
+      id: get(post, 'data.id', ''),
+      title: get(post, 'data.title', ''),
+      score: get(post, 'data.score', 0),
+      url: get(post, 'data.url', ''),
+      createdUnix: get(post, 'data.created', 0),
+      permalink: get(post, 'data.permalink', ''),
+      selfText: get(post, 'data.selfText', ''),
+      subreddit: get(post, 'data.subreddit', ''),
+      thumbnail: get(post, 'data.thumbnail', ''),
+      numComments: get(post, 'data.num_comments', 0),
+      isNsfw: get(post, 'data.over_18', true)
+    }
   }
 
   const getTileSize = (hasThumbnail: boolean, hasHighScore: boolean): string => {
@@ -85,19 +90,16 @@ const Grid: React.FC<GridProps> = () => {
       {redditPosts.map(
         (postProps: RedditPostProps, i: number): JSX.Element => renderTile(postProps, i)
       )}
-      {[...Array(redditPosts.length)].map((_, i: number) => (
+      {/* {[...Array(redditPosts.length)].map((_, i: number) => (
         <Tile size="filler" key={`tile-filler-${i}`} />
-      ))}
+      ))} */}
     </Fragment>
   )
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => fetchRedditPosts(), [])
 
   return (
     <div className="grid">
       {renderSearchTile()}
-      {fetchState === 'SUCCESS' ? renderTiles() : <h3>Loading</h3>}
+      {fetchState === 'SUCCESS' ? renderTiles() : <h3>Loading...</h3>}
     </div>
   )
 }
