@@ -1,4 +1,7 @@
 .tile {
+  display: flex;
+  flex-direction: column;
+
   border: 1px solid #85adb9;
   border-radius: 1rem;
   grid-column: span 2;
@@ -7,6 +10,17 @@
   -webkit-box-shadow: 0.1rem 0.1rem 0.5rem #b8cfd6;
   -moz-box-shadow: 0.1rem 0.1rem 0.5rem #b8cfd6;
   box-shadow: 0.1rem 0.1rem 0.5rem #b8cfd6;
+
+  .content {
+    flex: 1;
+  }
+
+  .controls {
+    display: flex;
+    flex: 0;
+    justify-content: flex-end;
+    padding: 0 1rem 1rem 1rem;
+  }
 
   &.small {
     grid-column: span 2;

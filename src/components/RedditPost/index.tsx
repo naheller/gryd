@@ -17,7 +17,8 @@ export type RedditPostProps = {
   subreddit: string
   thumbnail: string
   numComments: number
-  isNsfw: boolean
+  isNsfw: boolean,
+  expanded: boolean
 }
 
 export type CommentProps = {
@@ -39,7 +40,8 @@ const RedditPost: FC<RedditPostProps> = ({
   permalink,
   subreddit,
   thumbnail,
-  score
+  score,
+  expanded
 }): JSX.Element => {
   const baseUrl: string = 'https://www.reddit.com'
   const bgImageStyle: BGImageStyle = { backgroundImage: `url(${thumbnail})` }
@@ -53,6 +55,10 @@ const RedditPost: FC<RedditPostProps> = ({
   useEffect(() => {
     if (hasHighScore) fetchCommentsForPost(subreddit, id)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (expanded) fetchCommentsForPost(subreddit, id)
+  }, [expanded]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (fetchStatus === 'SUCCESS') {
@@ -123,7 +129,7 @@ const RedditPost: FC<RedditPostProps> = ({
   }
 
   const renderTitle = (): JSX.Element => {
-    return hasHighScore ? (
+    return hasHighScore || expanded ? (
       <h2 className="title">{renderLink()}</h2>
     ) : (
       <h4 className="title">{renderLink()}</h4>
