@@ -55,7 +55,8 @@ const Grid: React.FC<GridProps> = () => {
       subreddit: get(post, 'data.subreddit', ''),
       thumbnail: get(post, 'data.thumbnail', ''),
       numComments: get(post, 'data.num_comments', 0),
-      isNsfw: get(post, 'data.over_18', true)
+      isNsfw: get(post, 'data.over_18', true),
+      expanded: false
     }
   }
 
@@ -80,7 +81,7 @@ const Grid: React.FC<GridProps> = () => {
   }
 
   const renderSearchTile = (): JSX.Element => (
-    <Tile size="small">
+    <Tile isSearch size="small">
       <Search fetchRedditPosts={fetchRedditPosts} />
     </Tile>
   )
