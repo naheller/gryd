@@ -17,7 +17,7 @@ export type RedditPostProps = {
   subreddit: string
   thumbnail: string
   numComments: number
-  isNsfw: boolean,
+  isNsfw: boolean
   expanded: boolean
 }
 
@@ -71,7 +71,9 @@ const RedditPost: FC<RedditPostProps> = ({
           ? comments[1]
           : comments[0]
 
-      setTopComment({ body: commentToDisplay.body, author: commentToDisplay.author })
+      if (commentToDisplay) {
+        setTopComment({ body: commentToDisplay.body, author: commentToDisplay.author })
+      }
     }
   }, [fetchStatus]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -112,9 +114,12 @@ const RedditPost: FC<RedditPostProps> = ({
     <div className="comment">
       <hr />
       <small className="author">
-        <i>{`${topComment.author} commented:`}</i>
+        {topComment.author ? <i>{`${topComment.author} commented:`}</i> : <i>No comments</i>}
       </small>
-      <div className="comment-body" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(marked(topComment.body)) }} />
+      <div
+        className="comment-body"
+        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(marked(topComment.body)) }}
+      />
     </div>
   )
 
@@ -132,7 +137,7 @@ const RedditPost: FC<RedditPostProps> = ({
     return hasHighScore || expanded ? (
       <h2 className="title">{renderLink()}</h2>
     ) : (
-      <h4 className="title">{renderLink()}</h4>
+      <h4 className="title small">{renderLink()}</h4>
     )
   }
 
@@ -159,7 +164,11 @@ const RedditPost: FC<RedditPostProps> = ({
     // TODO: Use momentjs to further format date
     return (
       <div className={`body ${roundAllCorners}`}>
-        {!hasThumbnail && <div className="title-container">{renderTitle()}</div>}
+        {!hasThumbnail && (
+          <div className={`title-container ${!hasHighScore && !expanded && 'small'}`}>
+            {renderTitle()}
+          </div>
+        )}
         {!hasThumbnail && <hr />}
         {renderSubredditLink()}
         <a href={`${baseUrl}${permalink}`} target="_blank" rel="noopener noreferrer">

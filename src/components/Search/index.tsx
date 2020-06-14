@@ -18,7 +18,7 @@ const Search: React.FC<SearchProps> = ({ fetchRedditPosts }): JSX.Element => {
 
   const fetchTrendingSubreddits = (): void => {
     setFetchStatus('LOADING')
-    const url: string  = `${baseUrl}/api/trending_subreddits/.json`
+    const url: string = `${baseUrl}/api/trending_subreddits/.json`
 
     fetch(url)
       .then(res => res.json())
@@ -52,27 +52,32 @@ const Search: React.FC<SearchProps> = ({ fetchRedditPosts }): JSX.Element => {
   }
 
   const makeButtonFromSubredditName = (name: string, i: number): JSX.Element => {
-    return <button key={`trending-subreddit-${i}`} onClick={() => fillSearchFieldAndSearch(name)}>{name}</button>
+    return (
+      <button key={`trending-subreddit-${i}`} onClick={() => fillSearchFieldAndSearch(name)}>
+        {name}
+      </button>
+    )
   }
 
-  const renderTrendingSubredditButtons = () => (
+  const renderTrendingSubredditButtons = () =>
     trendingSubreddits.map((subredditName, i) => makeButtonFromSubredditName(subredditName, i))
-  )
 
   return (
     <div className="search">
-      <small>Search:</small><br />
       <input
         type="text"
+        className="text-field"
         value={searchText}
         onChange={handleTextChange}
-        placeholder="Enter subreddit name"
+        placeholder="Filter by subreddit"
       />
       <button onClick={search}>Get posts</button>
       <button onClick={resetSearch}>Reset</button>
       <hr />
-      <small>Trending subreddits:</small><br />
-      {fetchStatus === 'SUCCESS' && renderTrendingSubredditButtons()}
+      <p className="trending-title">Trending subreddits:</p>
+      <div className="trending-container">
+        {fetchStatus === 'SUCCESS' && renderTrendingSubredditButtons()}
+      </div>
     </div>
   )
 }

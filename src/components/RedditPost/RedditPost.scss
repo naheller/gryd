@@ -43,6 +43,10 @@
     max-height: 9rem;
     overflow: auto;
 
+    .small {
+      max-height: 2.25rem;
+    }
+
     .title {
       margin: 0;
       height: max-content;
