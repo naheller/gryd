@@ -69,7 +69,7 @@ const Search: React.FC<SearchProps> = ({ fetchRedditPosts }): JSX.Element => {
         className="text-field"
         value={searchText}
         onChange={handleTextChange}
-        placeholder="Filter by subreddit"
+        placeholder="Enter subreddit"
       />
       <button onClick={search}>Get posts</button>
       <button onClick={resetSearch}>Reset</button>
